@@ -259,7 +259,7 @@ let expand ~loc ~path:_ action query args =
                   match Pg_query.parse query_sql with
                   | Ok _ -> Ok ()
                   | Error msg ->
-                      Error (Printf.sprintf "Syntax error in SQL: '%s'" msg) )
+                      Error (Printf.sprintf "Syntax error in SQL: '%s'" msg))
               | true -> Ok ()
             in
             match syntax_result with
@@ -282,7 +282,7 @@ let expand ~loc ~path:_ action query args =
                            Error
                              "function_out is not a valid argument for execute"
                        | `Tuple ->
-                           expand_exec [%expr exec] Codegen.exec_function )
+                           expand_exec [%expr exec] Codegen.exec_function)
                    | "get_one" -> expand_get [%expr find] Codegen.find_function
                    | "get_opt" ->
                        expand_get [%expr find_opt] Codegen.find_opt_function
@@ -291,7 +291,7 @@ let expand ~loc ~path:_ action query args =
                    | _ ->
                        Error
                          "Supported actions are execute, get_one, get_opt and \
-                          get_many") ) )
+                          get_many")))
   in
   match expression_result with
   | Ok (Ok expr) -> expr
