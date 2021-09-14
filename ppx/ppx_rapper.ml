@@ -158,8 +158,8 @@ let make_expand_get_and_exec_expression ~loc parsed_query input_kind output_kind
           Ok
             (make_generic make_function
                [%expr
-                 [%e caqti_request_function_expr]
-                   ~oneshot:true ([%e caqti_input_type] [@ocaml.warning "-33"])
+                 [%e caqti_request_function_expr] ~oneshot:true
+                   ([%e caqti_input_type] [@ocaml.warning "-33"])
                    (Caqti_type.([%e outputs_caqti_type]) [@ocaml.warning "-33"])
                    sql])
         with Codegen.Error s -> Error s
@@ -170,8 +170,8 @@ let make_expand_get_and_exec_expression ~loc parsed_query input_kind output_kind
           Ok
             (make_generic make_function
                [%expr
-                 [%e caqti_request_function_expr]
-                   [%e caqti_input_type] (Caqti_type.unit) sql])
+                 [%e caqti_request_function_expr] [%e caqti_input_type]
+                   Caqti_type.unit sql])
         with Codegen.Error s -> Error s
       in
       (expand_get, expand_exec)
@@ -227,7 +227,7 @@ let make_expand_get_and_exec_expression ~loc parsed_query input_kind output_kind
                [%expr
                  [%e caqti_request_function_expr]
                    (Caqti_type.([%e inputs_caqti_type]) [@ocaml.warning "-33"])
-                   (Caqti_type.unit) [%e parsed_sql]])
+                   Caqti_type.unit [%e parsed_sql]])
         with Codegen.Error s -> Error s
       in
       (expand_get, expand_exec)
@@ -273,7 +273,8 @@ let expand_apply ~loc ~path:_ action query args =
                    in
                    match action with
                    (* execute is special case because there is no output Caqti_type *)
-                   | "execute" -> (
+                   | "execute" | "execute_or_fail" -> (
+                       let or_fail = String.equal "execute_or_fail" action in
                        match output_kind with
                        | `Record ->
                            Error
@@ -283,12 +284,20 @@ let expand_apply ~loc ~path:_ action query args =
                            Error
                              "function_out is not a valid argument for execute"
                        | `Tuple ->
-                           expand_exec [%expr Caqti_request.Infix.(->.)] Codegen.exec_function)
-                   | "get_one" -> expand_get [%expr Caqti_request.Infix.(->!)] Codegen.find_function
-                   | "get_opt" ->
-                       expand_get [%expr Caqti_request.Infix.(->?)] Codegen.find_opt_function
-                   | "get_many" ->
-                       expand_get [%expr Caqti_request.Infix.(->*)] Codegen.collect_list_function
+                           expand_exec [%expr Caqti_request.Infix.( ->. )]
+                             (Codegen.exec_function ~or_fail))
+                   | "get_one" | "get_one_or_fail" ->
+                       let or_fail = String.equal "get_one_or_fail" action in
+                       expand_get [%expr Caqti_request.Infix.( ->! )]
+                         (Codegen.find_function ~or_fail)
+                   | "get_opt" | "get_opt_or_fail" ->
+                       let or_fail = String.equal "get_opt_or_fail" action in
+                       expand_get [%expr Caqti_request.Infix.( ->? )]
+                         (Codegen.find_opt_function ~or_fail)
+                   | "get_many" | "get_many_or_fail" ->
+                       let or_fail = String.equal "get_many_or_fail" action in
+                       expand_get [%expr Caqti_request.Infix.( ->* )]
+                         (Codegen.collect_list_function ~or_fail)
                    | _ ->
                        Error
                          "Supported actions are execute, get_one, get_opt and \
