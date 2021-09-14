@@ -231,3 +231,24 @@ let%rapper use_let_syntax =
       SET (username, email, bio) = (%string{username}, %string{email}, %string?{bio})
       WHERE id = %int{id}
       |sql}
+
+let many_arg_execute_or_fail =
+  [%rapper
+    execute_or_fail
+      {sql|
+      UPDATE users
+      SET (username, email, bio) = (%string{username}, %string{email}, %string?{bio})
+      WHERE id = %int{id}
+      |sql}]
+
+let get_multiple_function_out_or_fail =
+  [%rapper
+    get_many_or_fail
+      {sql|
+      SELECT @int{users.id}, @string{users.name},
+             @int{twoots.id}, @string{twoots.content}, @int{twoots.likes}
+      FROM users
+      JOIN twoots ON twoots.id = users.id
+      ORDER BY users.id
+      |sql}
+      function_out]
