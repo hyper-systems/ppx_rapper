@@ -68,7 +68,7 @@ module type RAPPER_HELPER = sig
 
   val fail : 'e -> ('a, 'e) result future
 
-  val or_fail : ('a, [< Caqti_error.call_or_retrieve ]) result -> 'a future
+  val or_fail : ('a, [< Caqti_error.call_or_retrieve ]) result -> 'a
 
   module Stream : Caqti_stream.S with type 'a future := 'a future
 
@@ -86,7 +86,7 @@ struct
   let fail e = Io.return (Error e)
 
   let or_fail = function
-    | Ok x -> Io.return x
+    | Ok x -> x
     | Error (#Caqti_error.call_or_retrieve as err) ->
         raise (Caqti_error.Exn err)
 
