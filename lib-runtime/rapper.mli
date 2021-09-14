@@ -38,6 +38,8 @@ module type RAPPER_HELPER = sig
 
   val fail : 'e -> ('a, 'e) result future
 
+  val or_fail : ('a, [< Caqti_error.call_or_retrieve ]) result -> 'a future
+
   module Stream : Caqti_stream.S with type 'a future := 'a future
 
   module type CONNECTION =
