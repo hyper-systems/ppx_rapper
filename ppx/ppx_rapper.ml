@@ -272,7 +272,8 @@ let expand ~loc ~path:_ action query args =
                    in
                    match action with
                    (* execute is special case because there is no output Caqti_type *)
-                   | "execute" -> (
+                   | "execute" | "execute_or_fail" -> (
+                       let or_fail = String.equal "execute_or_fail" action in
                        match output_kind with
                        | `Record ->
                            Error
@@ -282,12 +283,19 @@ let expand ~loc ~path:_ action query args =
                            Error
                              "function_out is not a valid argument for execute"
                        | `Tuple ->
-                           expand_exec [%expr exec] Codegen.exec_function)
-                   | "get_one" -> expand_get [%expr find] Codegen.find_function
-                   | "get_opt" ->
-                       expand_get [%expr find_opt] Codegen.find_opt_function
-                   | "get_many" ->
-                       expand_get [%expr collect] Codegen.collect_list_function
+                           expand_exec [%expr exec]
+                             (Codegen.exec_function ~or_fail))
+                   | "get_one" | "get_one_or_fail" ->
+                       let or_fail = String.equal "get_one_or_fail" action in
+                       expand_get [%expr find] (Codegen.find_function ~or_fail)
+                   | "get_opt" | "get_opt_or_fail" ->
+                       let or_fail = String.equal "get_opt_or_fail" action in
+                       expand_get [%expr find_opt]
+                         (Codegen.find_opt_function ~or_fail)
+                   | "get_many" | "get_many_or_fail" ->
+                       let or_fail = String.equal "get_many_or_fail" action in
+                       expand_get [%expr collect]
+                         (Codegen.collect_list_function ~or_fail)
                    | _ ->
                        Error
                          "Supported actions are execute, get_one, get_opt and \
