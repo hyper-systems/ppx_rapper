@@ -39,8 +39,7 @@ let caqti_type_of_param ~loc Query.{ typ; opt; _ } =
         | "ptime" -> [%expr ptime]
         | "ptime_span" -> [%expr ptime_span]
         | other ->
-            raise (Error (Printf.sprintf "Base type '%s' not supported" other))
-        )
+            raise (Error (Printf.sprintf "Base type '%s' not supported" other)))
     | Some module_name, typ ->
         (* This case covers [cdate] and [ctime] *)
         Buildef.pexp_ident ~loc
@@ -152,6 +151,9 @@ let function_body_exec ~loc connection_function_expr
   assert (not Poly.(output_kind = `Record));
   let input_nested_tuples = nested_tuple_expression ~loc in_params in
   [%expr [%e connection_function_expr] query [%e input_nested_tuples]]
+
+let add_or_fail ~loc expr =
+  [%expr Rapper_helper.map Rapper_helper.or_fail [%e expr]]
 
 let output_field_name qualified_param_name =
   let split = String.split qualified_param_name ~on:'.' in
@@ -289,14 +291,15 @@ let function_body_find_opt ~loc =
 let function_body_collect ~loc = function_body_map ~loc [%expr Stdlib.List.map]
 
 (** Generates code like [fun ~x ~y ~z -> Db.some_function query (x, (y, z))]. *)
-let query_function ~loc ?(body_fn = fun x -> x) function_body_factory
-    connection_function_expr expression_contents =
+let query_function ~loc ?(or_fail = false) ?(body_fn = fun x -> x)
+    function_body_factory connection_function_expr expression_contents =
   let without_loaders_parameter =
     (* Tuples should have duplicates if they exist. *)
     let body =
       function_body_factory ~loc connection_function_expr expression_contents
       |> body_fn
     in
+    let body = if or_fail then add_or_fail ~loc body else body in
     let in_params = expression_contents.in_params in
     let deduped_in_params =
       match Query.remove_duplicates in_params with
@@ -343,17 +346,19 @@ let query_function ~loc ?(body_fn = fun x -> x) function_body_factory
               (List.init (List.length groups) ~f:(fun n ->
                    nth_loader_pat ~loc n))
           in
-          [%expr fun [%p loaders] -> [%e without_loaders_parameter]] )
+          [%expr fun [%p loaders] -> [%e without_loaders_parameter]])
   | _ -> without_loaders_parameter
 
-let exec_function ~body_fn ~loc =
-  query_function ~loc ~body_fn function_body_exec [%expr Db.exec]
+let exec_function ~body_fn ~loc ?or_fail =
+  query_function ~loc ?or_fail ~body_fn function_body_exec [%expr Db.exec]
 
-let find_function ~body_fn ~loc =
-  query_function ~loc ~body_fn function_body_find [%expr Db.find]
+let find_function ~body_fn ~loc ?or_fail =
+  query_function ~loc ?or_fail ~body_fn function_body_find [%expr Db.find]
 
-let find_opt_function ~body_fn ~loc =
-  query_function ~loc ~body_fn function_body_find_opt [%expr Db.find_opt]
+let find_opt_function ~body_fn ~loc ?or_fail =
+  query_function ~loc ?or_fail ~body_fn function_body_find_opt
+    [%expr Db.find_opt]
 
-let collect_list_function ~body_fn ~loc =
-  query_function ~loc ~body_fn function_body_collect [%expr Db.collect_list]
+let collect_list_function ~body_fn ~loc ?or_fail =
+  query_function ~loc ?or_fail ~body_fn function_body_collect
+    [%expr Db.collect_list]
