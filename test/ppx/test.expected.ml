@@ -1,13 +1,12 @@
 type a = { username: string }
-
 type b = { id: int; username: string }
-
 type c = { id: int; username: string; email: string }
 
 let many_arg_execute =
   let query =
     (let open Caqti_request in
     exec)
+      ~oneshot:true
       ((let open Caqti_type in
        tup2 string (tup2 string (tup2 (option string) int)))
       [@ocaml.warning "-33"])
@@ -26,6 +25,7 @@ let single_arg_execute =
   let query =
     (let open Caqti_request in
     exec)
+      ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       "\n      UPDATE users\n      SET username = ?\n      "
@@ -39,6 +39,7 @@ let no_arg_execute =
   let query =
     (let open Caqti_request in
     exec)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       "\n      UPDATE users\n      SET username = 'Hello!'\n      "
@@ -50,6 +51,7 @@ let many_arg_get_one =
   let query =
     (let open Caqti_request in
     find)
+      ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -76,6 +78,7 @@ let single_arg_get_one =
   let query =
     (let open Caqti_request in
     find)
+      ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -100,6 +103,7 @@ let no_arg_get_one =
   let query =
     (let open Caqti_request in
     find)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -120,6 +124,7 @@ let many_arg_get_one_repeated_arg =
   let query =
     (let open Caqti_request in
     find)
+      ~oneshot:true
       ((let open Caqti_type in
        tup2 int (tup2 string int)) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -142,6 +147,7 @@ let many_arg_get_opt =
   let query =
     (let open Caqti_request in
     find_opt)
+      ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -168,6 +174,7 @@ let single_arg_get_opt =
   let query =
     (let open Caqti_request in
     find_opt)
+      ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -194,6 +201,7 @@ let no_arg_get_opt =
   let query =
     (let open Caqti_request in
     find_opt)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -216,6 +224,7 @@ let many_arg_get_many =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -240,6 +249,7 @@ let single_arg_get_many =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -264,6 +274,7 @@ let no_arg_get_many =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -284,6 +295,7 @@ let my_query =
   let query =
     (let open Caqti_request in
     find_opt)
+      ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -419,6 +431,7 @@ let get_cards =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        Suit.t) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -439,6 +452,7 @@ let all_types =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -498,6 +512,7 @@ let get_cards =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        Nested.Suit.t) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -515,13 +530,13 @@ let get_cards =
   wrapped
 
 type user = { user_id: int; name: string }
-
 type twoot = { twoot_id: int; content: string; likes: int }
 
 let get_multiple_record_out =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -551,6 +566,7 @@ let get_single_function_out loaders =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -571,6 +587,7 @@ let get_multiple_function_out loaders =
   let query =
     (let open Caqti_request in
     collect)
+      ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -597,14 +614,77 @@ let get_multiple_function_out loaders =
     Rapper_helper.map f (Db.collect_list query ())
   in
   wrapped loaders
+
 let use_let_syntax =
   let query =
-    (let open Caqti_request in exec)
+    (let open Caqti_request in
+    exec)
+      ~oneshot:true
       ((let open Caqti_type in
-          tup2 string (tup2 string (tup2 (option string) int)))
+       tup2 string (tup2 string (tup2 (option string) int)))
       [@ocaml.warning "-33"])
-      "\n      UPDATE users\n      SET (username, email, bio) = (?, ?, ?)\n      WHERE id = ?\n      " in
-  let wrapped ~username  ~email  ~bio  ~id 
-    ((module Db)  : (module Rapper_helper.CONNECTION)) =
-    Db.exec query (username, (email, (bio, id))) in
+      "\n\
+      \      UPDATE users\n\
+      \      SET (username, email, bio) = (?, ?, ?)\n\
+      \      WHERE id = ?\n\
+      \      "
+  in
+  let wrapped ~username ~email ~bio ~id (module Db : Rapper_helper.CONNECTION) =
+    Db.exec query (username, (email, (bio, id)))
+  in
   wrapped
+
+let many_arg_execute_or_fail =
+  let query =
+    (let open Caqti_request in
+    exec)
+      ~oneshot:true
+      ((let open Caqti_type in
+       tup2 string (tup2 string (tup2 (option string) int)))
+      [@ocaml.warning "-33"])
+      "\n\
+      \      UPDATE users\n\
+      \      SET (username, email, bio) = (?, ?, ?)\n\
+      \      WHERE id = ?\n\
+      \      "
+  in
+  let wrapped ~username ~email ~bio ~id (module Db : Rapper_helper.CONNECTION) =
+    Rapper_helper.map Rapper_helper.or_fail
+      (Db.exec query (username, (email, (bio, id))))
+  in
+  wrapped
+
+let get_multiple_function_out_or_fail loaders =
+  let query =
+    (let open Caqti_request in
+    collect)
+      ~oneshot:true
+      ((let open Caqti_type in
+       unit) [@ocaml.warning "-33"])
+      ((let open Caqti_type in
+       tup2 int (tup2 string (tup2 int (tup2 string int))))
+      [@ocaml.warning "-33"])
+      "\n\
+      \      SELECT users.id, users.name,\n\
+      \             twoots.id, twoots.content, twoots.likes\n\
+      \      FROM users\n\
+      \      JOIN twoots ON twoots.id = users.id\n\
+      \      ORDER BY users.id\n\
+      \      "
+  in
+  let wrapped (loader, loader') () (module Db : Rapper_helper.CONNECTION) =
+    Rapper_helper.map Rapper_helper.or_fail
+      (let f result =
+         let g
+             ( users_id,
+               (users_name, (twoots_id, (twoots_content, twoots_likes))) ) =
+           ( loader ~id:users_id ~name:users_name,
+             loader' ~id:twoots_id ~content:twoots_content ~likes:twoots_likes
+           )
+         in
+         let f = Stdlib.List.map g in
+         match result with Ok x -> Ok (f x) | Error e -> Error e
+       in
+       Rapper_helper.map f (Db.collect_list query ()))
+  in
+  wrapped loaders
