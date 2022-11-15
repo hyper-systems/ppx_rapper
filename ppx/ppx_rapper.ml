@@ -170,7 +170,7 @@ let make_expand_get_and_exec_expression ~loc parsed_query input_kind output_kind
             (make_generic make_function
                [%expr
                  Caqti_request.([%e caqti_request_function_expr])
-                   [%e caqti_input_type] sql])
+                 ~oneshot:true [%e caqti_input_type] sql])
         with Codegen.Error s -> Error s
       in
       (expand_get, expand_exec)
@@ -213,7 +213,7 @@ let make_expand_get_and_exec_expression ~loc parsed_query input_kind output_kind
             (make_generic make_function
                [%expr
                  Caqti_request.([%e caqti_request_function_expr])
-                   (Caqti_type.([%e inputs_caqti_type]) [@ocaml.warning "-33"])
+                  ~oneshot:true (Caqti_type.([%e inputs_caqti_type]) [@ocaml.warning "-33"])
                    (Caqti_type.([%e outputs_caqti_type]) [@ocaml.warning "-33"])
                    [%e parsed_sql]])
         with Codegen.Error s -> Error s
@@ -225,7 +225,7 @@ let make_expand_get_and_exec_expression ~loc parsed_query input_kind output_kind
             (make_generic make_function
                [%expr
                  Caqti_request.([%e caqti_request_function_expr])
-                   (Caqti_type.([%e inputs_caqti_type]) [@ocaml.warning "-33"])
+                  ~oneshot:true (Caqti_type.([%e inputs_caqti_type]) [@ocaml.warning "-33"])
                    [%e parsed_sql]])
         with Codegen.Error s -> Error s
       in
