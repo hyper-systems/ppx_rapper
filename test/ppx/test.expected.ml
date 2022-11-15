@@ -600,3 +600,58 @@ let use_let_syntax =
     Db.exec query (username, (email, (bio, id)))
   in
   wrapped
+
+let many_arg_execute_or_fail =
+  let query =
+    (let open Caqti_request in
+    exec)
+      ~oneshot:true
+      ((let open Caqti_type in
+       tup2 string (tup2 string (tup2 (option string) int)))
+      [@ocaml.warning "-33"])
+      "\n\
+      \      UPDATE users\n\
+      \      SET (username, email, bio) = (?, ?, ?)\n\
+      \      WHERE id = ?\n\
+      \      "
+  in
+  let wrapped ~username ~email ~bio ~id (module Db : Rapper_helper.CONNECTION) =
+    Rapper_helper.map Rapper_helper.or_fail
+      (Db.exec query (username, (email, (bio, id))))
+  in
+  wrapped
+
+let get_multiple_function_out_or_fail loaders =
+  let query =
+    (let open Caqti_request in
+    collect)
+      ~oneshot:true
+      ((let open Caqti_type in
+       unit) [@ocaml.warning "-33"])
+      ((let open Caqti_type in
+       tup2 int (tup2 string (tup2 int (tup2 string int))))
+      [@ocaml.warning "-33"])
+      "\n\
+      \      SELECT users.id, users.name,\n\
+      \             twoots.id, twoots.content, twoots.likes\n\
+      \      FROM users\n\
+      \      JOIN twoots ON twoots.id = users.id\n\
+      \      ORDER BY users.id\n\
+      \      "
+  in
+  let wrapped (loader, loader') () (module Db : Rapper_helper.CONNECTION) =
+    Rapper_helper.map Rapper_helper.or_fail
+      (let f result =
+         let g
+             ( users_id,
+               (users_name, (twoots_id, (twoots_content, twoots_likes))) ) =
+           ( loader ~id:users_id ~name:users_name,
+             loader' ~id:twoots_id ~content:twoots_content ~likes:twoots_likes
+           )
+         in
+         let f = Stdlib.List.map g in
+         match result with Ok x -> Ok (f x) | Error e -> Error e
+       in
+       Rapper_helper.map f (Db.collect_list query ()))
+  in
+  wrapped loaders
