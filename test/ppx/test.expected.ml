@@ -4,7 +4,7 @@ type c = { id: int; username: string; email: string }
 
 let many_arg_execute =
   let query =
-    Caqti_request.Infix.( ->. )
+    Caqti_request.Infix.( ->. ) ~oneshot:true
       ((let open Caqti_type in
        tup2 string (tup2 string (tup2 (option string) int)))
       [@ocaml.warning "-33"])
@@ -22,7 +22,7 @@ let many_arg_execute =
 
 let single_arg_execute =
   let query =
-    Caqti_request.Infix.( ->. )
+    Caqti_request.Infix.( ->. ) ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       Caqti_type.unit "\n      UPDATE users\n      SET username = ?\n      "
@@ -34,7 +34,7 @@ let single_arg_execute =
 
 let no_arg_execute =
   let query =
-    Caqti_request.Infix.( ->. )
+    Caqti_request.Infix.( ->. ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       Caqti_type.unit
@@ -45,9 +45,7 @@ let no_arg_execute =
 
 let many_arg_get_one =
   let query =
-    Caqti_request.Infix.( ->! )
-      ((let open Caqti_type in
-       tup2 string int) [@ocaml.warning "-33"])
+    Caqti_request.Infix.( ->! ) ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -72,7 +70,7 @@ let many_arg_get_one =
 
 let single_arg_get_one =
   let query =
-    Caqti_request.Infix.( ->! )
+    Caqti_request.Infix.( ->! ) ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -95,7 +93,7 @@ let single_arg_get_one =
 
 let no_arg_get_one =
   let query =
-    Caqti_request.Infix.( ->! )
+    Caqti_request.Infix.( ->! ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -114,7 +112,7 @@ let no_arg_get_one =
 
 let many_arg_get_one_repeated_arg =
   let query =
-    Caqti_request.Infix.( ->! )
+    Caqti_request.Infix.( ->! ) ~oneshot:true
       ((let open Caqti_type in
        tup2 int (tup2 string int)) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -135,7 +133,7 @@ let many_arg_get_one_repeated_arg =
 
 let many_arg_get_opt =
   let query =
-    Caqti_request.Infix.( ->? )
+    Caqti_request.Infix.( ->? ) ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -160,7 +158,7 @@ let many_arg_get_opt =
 
 let single_arg_get_opt =
   let query =
-    Caqti_request.Infix.( ->? )
+    Caqti_request.Infix.( ->? ) ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -185,7 +183,7 @@ let single_arg_get_opt =
 
 let no_arg_get_opt =
   let query =
-    Caqti_request.Infix.( ->? )
+    Caqti_request.Infix.( ->? ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -206,7 +204,7 @@ let no_arg_get_opt =
 
 let many_arg_get_many =
   let query =
-    Caqti_request.Infix.( ->* )
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -229,7 +227,7 @@ let many_arg_get_many =
 
 let single_arg_get_many =
   let query =
-    Caqti_request.Infix.( ->* )
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        string) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -252,7 +250,7 @@ let single_arg_get_many =
 
 let no_arg_get_many =
   let query =
-    Caqti_request.Infix.( ->* )
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -271,9 +269,7 @@ let no_arg_get_many =
 
 let my_query =
   let query =
-    Caqti_request.Infix.( ->? )
-      ((let open Caqti_type in
-       tup2 string int) [@ocaml.warning "-33"])
+    Caqti_request.Infix.( ->? ) ~oneshot:true
       ((let open Caqti_type in
        tup2 string int) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -403,7 +399,7 @@ end
 
 let get_cards =
   let query =
-    Caqti_request.Infix.( ->* )
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        Suit.t) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -422,9 +418,7 @@ let get_cards =
 
 let all_types =
   let query =
-    Caqti_request.Infix.( ->* )
-      ((let open Caqti_type in
-       unit) [@ocaml.warning "-33"])
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -482,7 +476,7 @@ end
 
 let get_cards =
   let query =
-    Caqti_request.Infix.( ->* )
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        Nested.Suit.t) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -504,9 +498,7 @@ type twoot = { twoot_id: int; content: string; likes: int }
 
 let get_multiple_record_out =
   let query =
-    Caqti_request.Infix.( ->* )
-      ((let open Caqti_type in
-       unit) [@ocaml.warning "-33"])
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -534,7 +526,7 @@ let get_multiple_record_out =
 
 let get_single_function_out loaders =
   let query =
-    Caqti_request.Infix.( ->* )
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -553,9 +545,7 @@ let get_single_function_out loaders =
 
 let get_multiple_function_out loaders =
   let query =
-    Caqti_request.Infix.( ->* )
-      ((let open Caqti_type in
-       unit) [@ocaml.warning "-33"])
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
@@ -585,7 +575,7 @@ let get_multiple_function_out loaders =
 
 let use_let_syntax =
   let query =
-    Caqti_request.Infix.( ->. )
+    Caqti_request.Infix.( ->. ) ~oneshot:true
       ((let open Caqti_type in
        tup2 string (tup2 string (tup2 (option string) int)))
       [@ocaml.warning "-33"])
@@ -603,12 +593,11 @@ let use_let_syntax =
 
 let many_arg_execute_or_fail =
   let query =
-    (let open Caqti_request in
-    exec)
-      ~oneshot:true
+    Caqti_request.Infix.( ->. ) ~oneshot:true
       ((let open Caqti_type in
        tup2 string (tup2 string (tup2 (option string) int)))
       [@ocaml.warning "-33"])
+      Caqti_type.unit
       "\n\
       \      UPDATE users\n\
       \      SET (username, email, bio) = (?, ?, ?)\n\
@@ -623,9 +612,7 @@ let many_arg_execute_or_fail =
 
 let get_multiple_function_out_or_fail loaders =
   let query =
-    (let open Caqti_request in
-    collect)
-      ~oneshot:true
+    Caqti_request.Infix.( ->* ) ~oneshot:true
       ((let open Caqti_type in
        unit) [@ocaml.warning "-33"])
       ((let open Caqti_type in
